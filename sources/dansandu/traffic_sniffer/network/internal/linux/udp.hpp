@@ -10,10 +10,10 @@
 
 using dansandu::jelly::json::Json;
 
-namespace dansandu::traffic_sniffer::network::user_datagram_protocol_header
+namespace dansandu::traffic_sniffer::network::udp
 {
 
-Json deserializeUserDatagramProtocolHeaderToJson(const uint8_t* layerBegin, const uint8_t* packetEnd)
+const uint8_t* deserializeUdpHeaderToJson(const uint8_t* layerBegin, const uint8_t* packetEnd, Json& outputJson)
 {
     constexpr int headerSize = sizeof(udphdr);
 
@@ -24,11 +24,11 @@ Json deserializeUserDatagramProtocolHeaderToJson(const uint8_t* layerBegin, cons
               headerSize, " bytes instead of ", layerSize, " bytes");
 
     auto header = reinterpret_cast<const udphdr*>(layerBegin);
-    auto json = std::map<std::string, Json>();
-    json.emplace("sourcePort", Json::from<int>(ntohs(header->source)));
-    json.emplace("destinationPort", Json::from<int>(ntohs(header->dest)));
-    json.emplace("packetLength", Json::from<int>(layerSize));
-    return Json::from<std::map<std::string, Json>>(std::move(json));
+    auto& map = outputJson.get<std::map<std::string, Json>>();
+    map.emplace("sourcePort", Json::from<int>(ntohs(header->source)));
+    map.emplace("destinationPort", Json::from<int>(ntohs(header->dest)));
+    map.emplace("udpLength", Json::from<int>(ntohs(header->len)));
+    return layerBegin + headerSize;
 }
 
 }

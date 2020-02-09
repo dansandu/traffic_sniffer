@@ -11,7 +11,7 @@
 
 using dansandu::jelly::json::Json;
 
-namespace dansandu::traffic_sniffer::network::transmission_control_protocol_header
+namespace dansandu::traffic_sniffer::network::tcp
 {
 
 static auto getTcpFlags(const tcphdr* header)
@@ -36,7 +36,7 @@ static auto getTcpFlags(const tcphdr* header)
     return flags.str();
 }
 
-Json deserializeTransmissionControlProtocolHeaderToJson(const uint8_t* layerBegin, const uint8_t* packetEnd)
+const uint8_t* deserializeTcpHeaderToJson(const uint8_t* layerBegin, const uint8_t* packetEnd, Json& outputJson)
 {
     constexpr int headerSize = sizeof(tcphdr);
     auto layerSize = packetEnd - layerBegin;
@@ -45,15 +45,14 @@ Json deserializeTransmissionControlProtocolHeaderToJson(const uint8_t* layerBegi
               "Could not extract transmission control protocol header from packet -- the header must have at least ",
               headerSize, " bytes instead of ", layerSize, " bytes");
 
-    auto payloadSize = packetEnd - (layerBegin + headerSize);
     auto header = reinterpret_cast<const tcphdr*>(layerBegin);
-    auto json = std::map<std::string, Json>();
-    json.emplace("tcpFlags", Json::from<std::string>(getTcpFlags(header)));
-    json.emplace("destinationPort", Json::from<int>(ntohs(header->dest)));
-    json.emplace("sourcePort", Json::from<int>(ntohs(header->source)));
-    json.emplace("tcpHeaderLength", Json::from<int>(headerSize));
-    json.emplace("payloadSize", Json::from<int>(payloadSize));
-    return Json::from<std::map<std::string, Json>>(std::move(json));
+    auto tcpDataOffset = header->doff * 4;
+    auto& map = outputJson.get<std::map<std::string, Json>>();
+    map.emplace("tcpFlags", Json::from<std::string>(getTcpFlags(header)));
+    map.emplace("sourcePort", Json::from<int>(ntohs(header->source)));
+    map.emplace("destinationPort", Json::from<int>(ntohs(header->dest)));
+    map.emplace("tcpDataOffset", Json::from<int>(tcpDataOffset));
+    return layerBegin + tcpDataOffset;
 }
 
 }

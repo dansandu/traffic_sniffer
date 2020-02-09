@@ -1,15 +1,15 @@
 #include "catchorg/catch/catch.hpp"
 #include "dansandu/jelly/json.hpp"
-#include "dansandu/traffic_sniffer/network/internet_protocol_header.hpp"
+#include "dansandu/traffic_sniffer/network/ip.hpp"
 
 #include <cstdint>
 #include <map>
 #include <string>
 
 using dansandu::jelly::json::Json;
-using dansandu::traffic_sniffer::network::internet_protocol_header::deserializeInternetProtocolHeaderToJson;
+using dansandu::traffic_sniffer::network::ip::deserializeIpHeaderToJson;
 
-TEST_CASE("Internet protocol header")
+TEST_CASE("Ip")
 {
     SECTION("json deserialization")
     {
@@ -26,7 +26,8 @@ TEST_CASE("Internet protocol header")
             0x51, 0xC0, 0x69, 0x01  // destination ip address
         };                          // no options
 
-        auto json = deserializeInternetProtocolHeaderToJson(std::begin(packet), std::end(packet));
+        auto json = Json::from<std::map<std::string, Json>>();
+        deserializeIpHeaderToJson(std::begin(packet), std::end(packet), json);
         const auto& map = json.get<std::map<std::string, Json>>();
 
         REQUIRE(map.at("ipVersion").get<int>() == 4);

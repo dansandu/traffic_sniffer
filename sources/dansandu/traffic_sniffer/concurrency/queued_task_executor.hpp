@@ -11,7 +11,8 @@
 namespace dansandu::traffic_sniffer::concurrency::queued_task_executor
 {
 
-class QueuedTaskExecutor : dansandu::ballotin::type_traits::Immovable, dansandu::ballotin::type_traits::Uncopyable
+class QueuedTaskExecutor : private dansandu::ballotin::type_traits::Immovable,
+                           private dansandu::ballotin::type_traits::Uncopyable
 {
 public:
     QueuedTaskExecutor();

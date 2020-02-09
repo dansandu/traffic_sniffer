@@ -9,10 +9,10 @@
 
 using dansandu::jelly::json::Json;
 
-namespace dansandu::traffic_sniffer::network::internet_protocol_header
+namespace dansandu::traffic_sniffer::network::ip
 {
 
-static auto getInternetProtocolProtocol(int id)
+static auto getIpProtocol(int id)
 {
     switch (id)
     {
@@ -71,7 +71,7 @@ static auto getInternetProtocolProtocol(int id)
     }
 }
 
-Json deserializeInternetProtocolHeaderToJson(const uint8_t* layerBegin, const uint8_t* packetEnd)
+const uint8_t* deserializeIpHeaderToJson(const uint8_t* layerBegin, const uint8_t* packetEnd, Json& outputJson)
 {
     int headerSize = sizeof(iphdr);
     auto layerSize = packetEnd - layerBegin;
@@ -91,13 +91,13 @@ Json deserializeInternetProtocolHeaderToJson(const uint8_t* layerBegin, const ui
     memset(&destination, 0, sizeof(destination));
     destination.sin_addr.s_addr = header->daddr;
 
-    auto json = std::map<std::string, Json>();
-    json.emplace("ipVersion", Json::from<int>(header->version));
-    json.emplace("ipHeaderLength", Json::from<int>(headerSize));
-    json.emplace("sourceIp", Json::from<std::string>(inet_ntoa(source.sin_addr)));
-    json.emplace("destinationIp", Json::from<std::string>(inet_ntoa(destination.sin_addr)));
-    json.emplace("ipProtocol", Json::from<std::string>(getInternetProtocolProtocol(header->protocol)));
-    return Json::from<std::map<std::string, Json>>(std::move(json));
+    auto& map = outputJson.get<std::map<std::string, Json>>();
+    map.emplace("ipVersion", Json::from<int>(header->version));
+    map.emplace("ipHeaderLength", Json::from<int>(headerSize));
+    map.emplace("sourceIp", Json::from<std::string>(inet_ntoa(source.sin_addr)));
+    map.emplace("destinationIp", Json::from<std::string>(inet_ntoa(destination.sin_addr)));
+    map.emplace("ipProtocol", Json::from<std::string>(getIpProtocol(header->protocol)));
+    return layerBegin + headerSize;
 }
 
 }

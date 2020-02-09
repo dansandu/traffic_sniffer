@@ -1,16 +1,15 @@
 #include "catchorg/catch/catch.hpp"
 #include "dansandu/jelly/json.hpp"
-#include "dansandu/traffic_sniffer/network/transmission_control_protocol_header.hpp"
+#include "dansandu/traffic_sniffer/network/tcp.hpp"
 
 #include <cstdint>
 #include <map>
 #include <string>
 
 using dansandu::jelly::json::Json;
-using dansandu::traffic_sniffer::network::transmission_control_protocol_header::
-    deserializeTransmissionControlProtocolHeaderToJson;
+using dansandu::traffic_sniffer::network::tcp::deserializeTcpHeaderToJson;
 
-TEST_CASE("Transmission control protocol header")
+TEST_CASE("Tcp")
 {
     SECTION("json deserialization")
     {
@@ -27,13 +26,13 @@ TEST_CASE("Transmission control protocol header")
             0x05, 0x06, 0x07, 0x08  // payload
         };
 
-        auto json = deserializeTransmissionControlProtocolHeaderToJson(std::begin(packet), std::end(packet));
+        auto json = Json::from<std::map<std::string, Json>>();
+        deserializeTcpHeaderToJson(std::begin(packet), std::end(packet), json);
         const auto& map = json.get<std::map<std::string, Json>>();
 
         REQUIRE(map.at("tcpFlags").get<std::string>() == "ECE URG PSH SYN FIN ");
         REQUIRE(map.at("sourcePort").get<int>() == 3593);
         REQUIRE(map.at("destinationPort").get<int>() == 2966);
-        REQUIRE(map.at("tcpHeaderLength").get<int>() == 20);
-        REQUIRE(map.at("payloadSize").get<int>() == 8);
+        REQUIRE(map.at("tcpDataOffset").get<int>() == 20);
     }
 }
