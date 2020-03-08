@@ -48,10 +48,10 @@ const uint8_t* deserializeTcpHeaderToJson(const uint8_t* layerBegin, const uint8
     auto header = reinterpret_cast<const tcphdr*>(layerBegin);
     auto tcpDataOffset = header->doff * 4;
     auto& map = outputJson.get<std::map<std::string, Json>>();
-    map.emplace("tcpFlags", Json::from<std::string>(getTcpFlags(header)));
-    map.emplace("sourcePort", Json::from<int>(ntohs(header->source)));
-    map.emplace("destinationPort", Json::from<int>(ntohs(header->dest)));
-    map.emplace("tcpDataOffset", Json::from<int>(tcpDataOffset));
+    map.emplace("tcpFlags", getTcpFlags(header));
+    map.emplace("sourcePort", static_cast<int>(ntohs(header->source)));
+    map.emplace("destinationPort", static_cast<int>(ntohs(header->dest)));
+    map.emplace("tcpDataOffset", tcpDataOffset);
     return layerBegin + tcpDataOffset;
 }
 

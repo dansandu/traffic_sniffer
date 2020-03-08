@@ -42,10 +42,10 @@ const uint8_t* deserializeEthernetHeaderToJson(const uint8_t* packetBegin, const
 
     auto header = reinterpret_cast<const ethhdr*>(packetBegin);
     auto& map = outputJson.get<std::map<std::string, Json>>();
-    map.emplace("destinationMacAddress", Json::from<std::string>(getMacAddress(header->h_dest)));
-    map.emplace("sourceMacAddress", Json::from<std::string>(getMacAddress(header->h_source)));
-    map.emplace("macProtocol", Json::from<std::string>(getProtocol(header->h_proto)));
-    map.emplace("packetSize", Json::from<int>(packetSize));
+    map.emplace("destinationMacAddress", getMacAddress(header->h_dest));
+    map.emplace("sourceMacAddress", getMacAddress(header->h_source));
+    map.emplace("macProtocol", getProtocol(header->h_proto));
+    map.emplace("packetSize", static_cast<int>(packetSize));
     return packetBegin + headerSize;
 }
 

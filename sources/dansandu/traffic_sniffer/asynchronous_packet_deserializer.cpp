@@ -27,9 +27,8 @@ AsynchronousPacketDeserializer::AsynchronousPacketDeserializer(const std::string
 void AsynchronousPacketDeserializer::deserialize(std::vector<uint8_t> packet, std::string timestamp)
 {
     queuedTaskExecutor_.addTask([this, packet = std::move(packet), timestamp = std::move(timestamp)]() {
-        auto json = Json::from<std::map<std::string, Json>>();
+        auto json = Json{std::map<std::string, Json>{{"timestamp", std::move(timestamp)}}};
         deserializePacketHeadersToJson(packet, json);
-        json.get<std::map<std::string, Json>>().emplace("timestamp", Json::from<std::string>(std::move(timestamp)));
         outputFile_ << json << std::endl;
     });
 }

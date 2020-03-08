@@ -25,15 +25,13 @@ TEST_CASE("Ip")
             0xC0, 0xA8, 0x0A, 0x2D, // source ip address
             0x51, 0xC0, 0x69, 0x01  // destination ip address
         };                          // no options
-
-        auto json = Json::from<std::map<std::string, Json>>();
+        auto json = Json{std::map<std::string, Json>{}};
         deserializeIpHeaderToJson(std::begin(packet), std::end(packet), json);
-        const auto& map = json.get<std::map<std::string, Json>>();
 
-        REQUIRE(map.at("ipVersion").get<int>() == 4);
-        REQUIRE(map.at("ipHeaderLength").get<int>() == 20);
-        REQUIRE(map.at("sourceIp").get<std::string>() == "192.168.10.45");
-        REQUIRE(map.at("destinationIp").get<std::string>() == "81.192.105.1");
-        REQUIRE(map.at("ipProtocol").get<std::string>() == "TCP");
+        REQUIRE(json["ipVersion"].get<int>() == 4);
+        REQUIRE(json["ipHeaderLength"].get<int>() == 20);
+        REQUIRE(json["sourceIp"].get<std::string>() == "192.168.10.45");
+        REQUIRE(json["destinationIp"].get<std::string>() == "81.192.105.1");
+        REQUIRE(json["ipProtocol"].get<std::string>() == "TCP");
     }
 }

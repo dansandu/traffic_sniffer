@@ -25,9 +25,9 @@ const uint8_t* deserializeUdpHeaderToJson(const uint8_t* layerBegin, const uint8
 
     auto header = reinterpret_cast<const udphdr*>(layerBegin);
     auto& map = outputJson.get<std::map<std::string, Json>>();
-    map.emplace("sourcePort", Json::from<int>(ntohs(header->source)));
-    map.emplace("destinationPort", Json::from<int>(ntohs(header->dest)));
-    map.emplace("udpLength", Json::from<int>(ntohs(header->len)));
+    map.emplace("sourcePort", static_cast<int>(ntohs(header->source)));
+    map.emplace("destinationPort", static_cast<int>(ntohs(header->dest)));
+    map.emplace("udpLength", static_cast<int>(ntohs(header->len)));
     return layerBegin + headerSize;
 }
 

@@ -22,11 +22,11 @@ const uint8_t* deserializePacketHeadersToJson(const std::vector<uint8_t>& packet
     auto begin = &packet.front();
     auto end = begin + packet.size();
     auto secondLayer = deserializeEthernetHeaderToJson(begin, end, outputJson);
-    const auto& macProtocol = outputJson.get<std::map<std::string, Json>>().at("macProtocol").get<std::string>();
+    const auto& macProtocol = outputJson["macProtocol"].get<std::string>();
     if (macProtocol == "0x0800")
     {
         auto thirdLayer = deserializeIpHeaderToJson(secondLayer, end, outputJson);
-        auto ipProtocol = outputJson.get<std::map<std::string, Json>>().at("ipProtocol").get<std::string>();
+        auto ipProtocol = outputJson["ipProtocol"].get<std::string>();
         if (ipProtocol == "TCP")
         {
             return deserializeTcpHeaderToJson(thirdLayer, end, outputJson);

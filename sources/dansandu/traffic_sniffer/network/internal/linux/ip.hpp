@@ -92,11 +92,11 @@ const uint8_t* deserializeIpHeaderToJson(const uint8_t* layerBegin, const uint8_
     destination.sin_addr.s_addr = header->daddr;
 
     auto& map = outputJson.get<std::map<std::string, Json>>();
-    map.emplace("ipVersion", Json::from<int>(header->version));
-    map.emplace("ipHeaderLength", Json::from<int>(headerSize));
-    map.emplace("sourceIp", Json::from<std::string>(inet_ntoa(source.sin_addr)));
-    map.emplace("destinationIp", Json::from<std::string>(inet_ntoa(destination.sin_addr)));
-    map.emplace("ipProtocol", Json::from<std::string>(getIpProtocol(header->protocol)));
+    map.emplace("ipVersion", static_cast<int>(header->version));
+    map.emplace("ipHeaderLength", headerSize);
+    map.emplace("sourceIp", std::string{inet_ntoa(source.sin_addr)});
+    map.emplace("destinationIp", std::string{inet_ntoa(destination.sin_addr)});
+    map.emplace("ipProtocol", std::string{getIpProtocol(header->protocol)});
     return layerBegin + headerSize;
 }
 

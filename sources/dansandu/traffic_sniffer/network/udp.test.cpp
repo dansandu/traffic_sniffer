@@ -19,13 +19,11 @@ TEST_CASE("Udp")
             0x00, 0x08, // length
             0x00, 0x00  // checksum
         };
-
-        auto json = Json::from<std::map<std::string, Json>>();
+        auto json = Json{std::map<std::string, Json>{}};
         deserializeUdpHeaderToJson(std::begin(packet), std::end(packet), json);
-        const auto& map = json.get<std::map<std::string, Json>>();
 
-        REQUIRE(map.at("sourcePort").get<int>() == 270);
-        REQUIRE(map.at("destinationPort").get<int>() == 3891);
-        REQUIRE(map.at("udpLength").get<int>() == 8);
+        REQUIRE(json["sourcePort"].get<int>() == 270);
+        REQUIRE(json["destinationPort"].get<int>() == 3891);
+        REQUIRE(json["udpLength"].get<int>() == 8);
     }
 }

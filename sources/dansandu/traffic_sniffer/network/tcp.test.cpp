@@ -25,14 +25,12 @@ TEST_CASE("Tcp")
             0x01, 0x02, 0x03, 0x04, // payload
             0x05, 0x06, 0x07, 0x08  // payload
         };
-
-        auto json = Json::from<std::map<std::string, Json>>();
+        auto json = Json{std::map<std::string, Json>{}};
         deserializeTcpHeaderToJson(std::begin(packet), std::end(packet), json);
-        const auto& map = json.get<std::map<std::string, Json>>();
 
-        REQUIRE(map.at("tcpFlags").get<std::string>() == "ECE URG PSH SYN FIN ");
-        REQUIRE(map.at("sourcePort").get<int>() == 3593);
-        REQUIRE(map.at("destinationPort").get<int>() == 2966);
-        REQUIRE(map.at("tcpDataOffset").get<int>() == 20);
+        REQUIRE(json["tcpFlags"].get<std::string>() == "ECE URG PSH SYN FIN ");
+        REQUIRE(json["sourcePort"].get<int>() == 3593);
+        REQUIRE(json["destinationPort"].get<int>() == 2966);
+        REQUIRE(json["tcpDataOffset"].get<int>() == 20);
     }
 }
